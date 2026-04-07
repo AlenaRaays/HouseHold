@@ -1,42 +1,77 @@
-﻿using HouseHold.Models;
+﻿using BCrypt.Net;
+using HouseHold.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
+
 
 namespace HouseHold.Controllers
 {
     public class AuthorizeController : Controller
     {
-        public readonly ILogger<AuthorizeController> _logger;
-
-        public AuthorizeController(ILogger<AuthorizeController> logger)
+        private readonly ILogger<AuthorizeController> _logger;
+        private readonly DataBaseContext _context;
+        public AuthorizeController(ILogger<AuthorizeController> logger, DataBaseContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
+
+        [HttpGet]
         public IActionResult Index()
         {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Authorize()
-        {
-            Models.Users users = new Models.Users();
-
-            var form = Request.Form;
-            string email = form["email"];
-            string password = form["password"];
-
-            if (users.email == email && users.password == password)
+            if (HttpContext.Session.GetString("email") != null)
             {
-                ViewBag.success = true;
-                return View(ViewBag.success);
+                return RedirectToAction("Index", "MainShop");
             }
             else
             {
-                ViewBag.success = false;
-                return View(ViewBag.success);
+                return View(new LoginViewModel());
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(LoginViewModel loginView)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return View(loginView);
+            }
+
+            var user = await _context.users.FirstOrDefaultAsync(x => x.email == loginView.Email);
+
+            if (user != null && user.email == loginView.Email && user.password == loginView.Password)
+            {
+                HttpContext.Session.SetString("email", user.email);
+                HttpContext.Session.SetString("UserId", user.user_id.ToString());
+
+                if (loginView.RememberMe)
+                {
+                    // Увеличиваем время сессии для "запомнить меня"
+                    HttpContext.Session.SetString("RememberMe", "true");
+                }
+
+                _logger.LogInformation($"User {user.email} logged in");
+
+                return RedirectToAction("Index", "MainShop");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Неверный email или пароль");
+                return View(loginView);
+
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Authorize");
         }
     }
 }

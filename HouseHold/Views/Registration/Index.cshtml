@@ -1,0 +1,73 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="~/css/register.css">
+</head>
+<body>
+    <div class="register-container">
+        <form id="registerForm" class="register-form" method="post" asp-action="Index" asp-controller="Registration">
+            <h2>Регистрация</h2>
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="last_name">Фамилия</label>
+                    <input type="text" id="last_name" name="last_name" value="@Model?.last_name" required maxlength="20">
+                </div>
+
+                <div class="input-group">
+                    <label for="first_name">Имя</label>
+                    <input type="text" id="first_name" name="first_name" value="@Model?.first_name" required maxlength="15">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="@Model?.email" required maxlength="250">
+            </div>
+
+            <div class="input-group">
+                <label for="phone">Телефон</label>
+                <input type="tel" id="phone" name="phone" value="@Model?.phone" maxlength="20" placeholder="+7 (999) 123-45-67">
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">Подтверждение пароля</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                </div>
+            </div>
+
+            <button type="submit" class="register-btn">Зарегистрироваться</button>
+
+            <p class="footer-text">
+                Уже есть аккаунт? <a href="@Url.Action("Index", "Authorize")">Войти</a>
+            </p>
+        </form>
+    </div>
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>
+</html>

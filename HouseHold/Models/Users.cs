@@ -11,8 +11,8 @@ namespace HouseHold.Models
         [Required, MaxLength(20)] public string phone { get; set; }
         [Required, MaxLength(250)] public string email { get; set; }
         [Required] public DateTime registration_date { get; set; }
-        [Required] public bool is_active { get; set; }
-        [Required, MaxLength(20)] public string password { get; set; }
+        [Required, Range(0, 1, ErrorMessage = "Значение должно быть 0 или 1")] public int is_active { get; set; }
+        [Required] public string password { get; set; }
         [Required] public int role_id { get; set; }
         public double discount { get; set; }
         public DateTime last_login_date { get; set; }

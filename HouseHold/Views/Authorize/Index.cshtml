@@ -1,6 +1,6 @@
 ﻿@{
-    <!DOCTYPE html>
-    <html lang="ru">
+<!DOCTYPE html>
+<html lang="ru">
     <head>
         <meta charset="UTF-8">
         <title>Авторизация</title>
@@ -8,36 +8,46 @@
     </head>
     <body>
         <div class="login-container">
-            <form class="login-form" method="post" action="authorize">
+            <form id="loginform" class="login-form" method="post" asp-action="Index" asp-controller="Authorize">
                 <h2>Вход</h2>
+
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                {
+                    <div class="alert alert-danger">
+                        @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                    </div>
+                }
 
                 <div class="input-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="Email" required>
                 </div>
 
                 <div class="input-group">
                     <label for="password">Пароль</label>
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" name="Password" required>
                 </div>
 
-                <button type="submit" class="login-btn" onsubmit="return ValidateForm()">Войти</button>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rememberMe" name="RememberMe">
+                    <label for="rememberMe">Запомнить меня</label>
+                </div>
+
+                <button type="submit" class="login-btn">Войти</button>
 
                 <p class="footer-text">
-                    Нет аккаунта? <a href="#">Регистрация</a>
+                    Нет аккаунта? <a href="~/Registration/Index">Регистрация</a>
                 </p>
             </form>
-
-            <script>
-                  function ValidateForm() {
-
-
-
-                  }
-            </script>
-
         </div>
+        @section Scripts {
+            @{
+                await Html.RenderPartialAsync("_ValidationScriptsPartial");
+            }
+        }
     </body>
-    </html>
-
+</html>
 }

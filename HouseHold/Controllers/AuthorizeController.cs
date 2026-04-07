@@ -29,13 +29,14 @@ namespace HouseHold.Controllers
 
             if (users.email == email && users.password == password)
             {
-                return ViewBag.Success = "sucess";
+                ViewBag.success = true;
+                return View(ViewBag.success);
             }
             else
             {
-                return ViewBag.Success = "error";
+                ViewBag.success = false;
+                return View(ViewBag.success);
             }
-
         }
     }
 }

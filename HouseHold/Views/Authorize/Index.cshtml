@@ -21,12 +21,21 @@
                     <input type="password" id="password" name="password" required>
                 </div>
 
-                <button type="submit" class="login-btn" onsubmit="@ViewBag.Success">Войти</button>
+                <button type="submit" class="login-btn" onsubmit="return ValidateForm()">Войти</button>
 
                 <p class="footer-text">
                     Нет аккаунта? <a href="#">Регистрация</a>
                 </p>
             </form>
+
+            <script>
+                  function ValidateForm() {
+
+
+
+                  }
+            </script>
+
         </div>
     </body>
     </html>

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HouseHold.Migrations
 {
     /// <inheritdoc />
-    public partial class household1 : Migration
+    public partial class HouseHold : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

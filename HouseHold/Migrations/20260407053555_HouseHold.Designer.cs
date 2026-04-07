@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HouseHold.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20260406105436_household1")]
-    partial class household1
+    [Migration("20260407053555_HouseHold")]
+    partial class HouseHold
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

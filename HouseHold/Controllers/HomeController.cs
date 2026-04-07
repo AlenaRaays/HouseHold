@@ -15,7 +15,7 @@ namespace HouseHold.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToRoute("default");
+            return RedirectToRoutePermanent("autho");
         }
 
 

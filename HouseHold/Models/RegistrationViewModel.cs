@@ -9,7 +9,7 @@ namespace HouseHold.Models
         [Required(ErrorMessage = "Введите телефон"), MaxLength(20)] public string phone { get; set; }
         [Required(ErrorMessage = "Введите email"), MaxLength(250), EmailAddress(ErrorMessage = "Неверный формат email")] public string email { get; set; }
         [Required(ErrorMessage = "Введите пароль"), DataType(DataType.Password)] public string password { get; set; }
-        [Required(ErrorMessage = "Повторите пароль"), DataType(DataType.Password), Compare("Password", ErrorMessage ="Пароли не совпадают")] public string confirmPassword { get; set; }
+        [Required(ErrorMessage = "Повторите пароль"), DataType(DataType.Password), Compare("password", ErrorMessage ="Пароли не совпадают")] public string confirmPassword { get; set; }
 
     }
 }

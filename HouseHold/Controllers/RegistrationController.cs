@@ -64,7 +64,7 @@ namespace HouseHold.Controllers
                 phone = registrationView.phone,
                 email = registrationView.email,
                 registration_date = DateTime.Today,
-                is_active = 1,
+                is_active = true,
                 password = BCrypt.Net.BCrypt.HashPassword(registrationView.password),
                 role_id = 3,
                 discount = 0,

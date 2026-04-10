@@ -1,20 +1,7 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\10230939\\source\\repos\\HouseHold\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|c:\\users\\10230939\\source\\repos\\household\\household\\wwwroot\\css\\register.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|solutionrelative:household\\wwwroot\\css\\register.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|c:\\users\\10230939\\source\\repos\\household\\household\\views\\authorize\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|solutionrelative:household\\views\\authorize\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|c:\\users\\10230939\\source\\repos\\household\\household\\wwwroot\\css\\authorize.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|solutionrelative:household\\wwwroot\\css\\authorize.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    }
-  ],
+  "WorkspaceRootPath": "C:\\Users\\Alena\\source\\repos\\HouseHold\\",
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 1,
@@ -22,12 +9,8 @@
       "DocumentGroups": [
         {
           "DockedHeight": 278,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": -1,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
@@ -39,43 +22,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "register.css",
-              "DocumentMoniker": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\wwwroot\\css\\register.css",
-              "RelativeDocumentMoniker": "HouseHold\\wwwroot\\css\\register.css",
-              "ToolTip": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\wwwroot\\css\\register.css",
-              "RelativeToolTip": "HouseHold\\wwwroot\\css\\register.css",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-07T11:50:46.997Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "authorize.css",
-              "DocumentMoniker": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\wwwroot\\css\\authorize.css",
-              "RelativeDocumentMoniker": "HouseHold\\wwwroot\\css\\authorize.css",
-              "ToolTip": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\wwwroot\\css\\authorize.css",
-              "RelativeToolTip": "HouseHold\\wwwroot\\css\\authorize.css",
-              "ViewState": "AgIAABsAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-07T11:50:33.806Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\Views\\Authorize\\Index.cshtml",
-              "RelativeDocumentMoniker": "HouseHold\\Views\\Authorize\\Index.cshtml",
-              "ToolTip": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\Views\\Authorize\\Index.cshtml",
-              "RelativeToolTip": "HouseHold\\Views\\Authorize\\Index.cshtml",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAACkAAAAsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-07T11:49:44.885Z"
             }
           ]
         }

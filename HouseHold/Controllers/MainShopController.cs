@@ -6,12 +6,6 @@ namespace HouseHold.Controllers
     {
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("email") == null)
-            {
-                return RedirectToAction("Index", "Authorize");
-            }
-
-            ViewBag.UserEmail = HttpContext.Session.GetString("email");
             return View();
         }
     }

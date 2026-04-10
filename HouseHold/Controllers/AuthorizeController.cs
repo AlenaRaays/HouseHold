@@ -44,18 +44,17 @@ namespace HouseHold.Controllers
 
             var user = await _context.users.FirstOrDefaultAsync(x => x.email == loginView.Email);
 
-            if (user != null && user.email == loginView.Email && user.password == loginView.Password)
+            if (user != null && user.email == loginView.Email && BCrypt.Net.BCrypt.Verify(loginView.Password, user.password))
             {
-                HttpContext.Session.SetString("email", user.email);
                 HttpContext.Session.SetString("UserId", user.user_id.ToString());
 
                 if (loginView.RememberMe)
                 {
-                    // Увеличиваем время сессии для "запомнить меня"
-                    HttpContext.Session.SetString("RememberMe", "true");
+                    HttpContext.Session.SetString("email", user.email);
+                    HttpContext.Session.SetString("password", user.password);
                 }
 
-                _logger.LogInformation($"User {user.email} logged in");
+                _logger.LogInformation($"User {user.user_id} logged in");
 
                 return RedirectToAction("Index", "MainShop");
             }

@@ -41,7 +41,7 @@ namespace HouseHold.Controllers
 
             if (existingUser != null)
             {
-                ModelState.AddModelError("Email", "Такой пользователь уже существует");
+                ModelState.AddModelError(string.Empty, "Такой пользователь уже существует");
                 return View(registrationView);
             }
 
@@ -52,7 +52,7 @@ namespace HouseHold.Controllers
 
                 if (existingPhone != null)
                 {
-                    ModelState.AddModelError("phone", "Телефон уже используется");
+                    ModelState.AddModelError(string.Empty, "Телефон уже используется");
                     return View(registrationView);
                 }
             }

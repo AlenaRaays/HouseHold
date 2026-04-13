@@ -1,17 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\10230939\\source\\repos\\HouseHold\\",
+  "WorkspaceRootPath": "C:\\Users\\Alena\\source\\repos\\HouseHold\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|c:\\users\\10230939\\source\\repos\\household\\household\\wwwroot\\css\\mainshop.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|solutionrelative:household\\wwwroot\\css\\mainshop.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|c:\\users\\10230939\\source\\repos\\household\\household\\views\\mainshop\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|c:\\users\\alena\\source\\repos\\household\\household\\views\\mainshop\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|solutionrelative:household\\views\\mainshop\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|c:\\users\\10230939\\source\\repos\\household\\household\\controllers\\mainshopcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|c:\\users\\alena\\source\\repos\\household\\household\\controllers\\mainshopcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B8776CE3-F0FD-4D4F-A7AB-22B727E127E3}|HouseHold\\HouseHold.csproj|solutionrelative:household\\controllers\\mainshopcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -26,10 +22,6 @@
           "Children": [
             {
               "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Bookmark",
               "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
             },
             {
@@ -42,41 +34,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "mainshop.css",
-              "DocumentMoniker": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\wwwroot\\css\\mainshop.css",
-              "RelativeDocumentMoniker": "HouseHold\\wwwroot\\css\\mainshop.css",
-              "ToolTip": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\wwwroot\\css\\mainshop.css",
-              "RelativeToolTip": "HouseHold\\wwwroot\\css\\mainshop.css",
-              "ViewState": "AgIAAHIAAAAAAAAAAAAAAIkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-04-10T12:27:33.995Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\Views\\MainShop\\Index.cshtml",
-              "RelativeDocumentMoniker": "HouseHold\\Views\\MainShop\\Index.cshtml",
-              "ToolTip": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\Views\\MainShop\\Index.cshtml",
-              "RelativeToolTip": "HouseHold\\Views\\MainShop\\Index.cshtml",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAACsAAAAgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-04-10T10:59:16.528Z",
+              "Title": "MainShopController.cs",
+              "DocumentMoniker": "C:\\Users\\Alena\\source\\repos\\HouseHold\\HouseHold\\Controllers\\MainShopController.cs",
+              "RelativeDocumentMoniker": "HouseHold\\Controllers\\MainShopController.cs",
+              "ToolTip": "C:\\Users\\Alena\\source\\repos\\HouseHold\\HouseHold\\Controllers\\MainShopController.cs",
+              "RelativeToolTip": "HouseHold\\Controllers\\MainShopController.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAgwC8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-13T06:59:24.604Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "MainShopController.cs",
-              "DocumentMoniker": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\Controllers\\MainShopController.cs",
-              "RelativeDocumentMoniker": "HouseHold\\Controllers\\MainShopController.cs",
-              "ToolTip": "C:\\Users\\10230939\\source\\repos\\HouseHold\\HouseHold\\Controllers\\MainShopController.cs",
-              "RelativeToolTip": "HouseHold\\Controllers\\MainShopController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-10T11:10:01.458Z",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Alena\\source\\repos\\HouseHold\\HouseHold\\Views\\MainShop\\Index.cshtml",
+              "RelativeDocumentMoniker": "HouseHold\\Views\\MainShop\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Alena\\source\\repos\\HouseHold\\HouseHold\\Views\\MainShop\\Index.cshtml",
+              "RelativeToolTip": "HouseHold\\Views\\MainShop\\Index.cshtml",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAAAF4AAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-04-13T06:39:19.74Z",
               "EditorCaption": ""
             }
           ]

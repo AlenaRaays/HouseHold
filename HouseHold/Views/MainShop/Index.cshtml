@@ -1,5 +1,6 @@
 ﻿@model ShopViewModel
 
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -31,10 +32,20 @@
                         <span class="badge">3</span>
                     </a>
                     
+                    @if (Model.UserId != null)
+                    {
+                        <a href="#" class="icon-btn login">
+                            <i class="fas fa-user-circle"></i>
+                            <span>@Model.UserName</span>
+                        </a>
+                    }
+                    else
+                    {
                         <a href="@Url.Action("Index", "Authorize")" class="icon-btn login">
                             <i class="fas fa-user-circle"></i>
                             <span>Войти</span>
                         </a>
+                    }
                 </div>
             </div>
         </div>
@@ -42,15 +53,24 @@
 
     <!-- Навигационное меню категорий -->
     <nav class="categories-nav">
-        <div class="container">
-            <ul class="categories-list">
-                <li><a href="#" class="active">Все товары</a></li>
-                @foreach (var i in Model.Categoryy)
-                {
-                    <li><a href="#">@i.name</a></li>
-                }
-            </ul>
-        </div>
+        <button id="btnLeft" class="scroll-btn left">&#10094;</button>
+        <ul class="categories-list">
+            <li>
+                <a href="@Url.Action("Index", "MainShop")" class="active">
+                    Все товары
+                </a>
+            </li>
+
+            @foreach (var cat in Model.Categoryy)
+            {
+                <li>
+                    <a href="@Url.Action("Index", "MainShop", new { categoryId = cat.category_id })">
+                        @cat.name
+                    </a>
+                </li>
+            }
+        </ul>
+        <button id="btnRight" class="scroll-btn right">&#10095;</button>
     </nav>
 
     <!-- Баннер / акция -->
@@ -73,10 +93,10 @@
                 <div class="sort-options">
                     <span>Сортировать:</span>
                     <select class="sort-select">
-                        <option>По популярности</option>
-                        <option>Сначала дешевле</option>
-                        <option>Сначала дороже</option>
-                        <option>По новизне</option>
+                        <option value="popular">По популярности</option>
+                        <option value="price_asc">Сначала дешевле</option>
+                        <option value="price_desc">Сначала дороже</option>
+                        <option value="new">По новизне</option>
                     </select>
                 </div>
             </div>
@@ -86,46 +106,55 @@
                 <aside class="filters-sidebar">
                     <div class="filter-section">
                         <h3><i class="fas fa-sliders-h"></i> Цена</h3>
+                        @{
+                            var maxPrice = Model.Productt.Max(x => x.price);
+                        }
+
+                        <input type="range"
+                               min="0"
+                               max="@Model.MaxPrice"
+                               value="@Model.MaxPrice" />
+
                         <div class="price-range">
-                            <input type="range" min="0" max="200000" value="50000">
                             <div class="price-inputs">
-                                <input type="number" placeholder="от" value="0">
+
+                                <input type="number" value="0">
                                 <span>—</span>
-                                <input type="number" placeholder="до" value="50000">
+                                <input type="number" value="@Model.MaxPrice">
+
                             </div>
                         </div>
                     </div>
 
                     <div class="filter-section">
                         <h3><i class="fas fa-tag"></i> Категории</h3>
-                        <label class="checkbox-label">
-                            <input type="checkbox"> Смартфоны
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox"> Ноутбуки
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox"> Планшеты
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox"> Наушники
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox"> Умные часы
-                        </label>
-                    </div>
 
-                    <div class="filter-section">
-                        <h3><i class="fas fa-star"></i> Рейтинг</h3>
-                        <label class="checkbox-label">
-                            <input type="checkbox"> 5 ★ и выше
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox"> 4 ★ и выше
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox"> 3 ★ и выше
-                        </label>
+                        <ul class="category-list">
+
+                            @foreach (var parent in Model.parentCategories)
+                            {
+                                <li>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" value="@parent.parent_category_id"> @parent.name
+                                    </label>
+
+                                    @if (parent.categories != null && parent.categories.Any())
+                                    {
+                                        <ul>
+                                            @foreach (var child in parent.categories)
+                                            {
+                                                <li>
+                                                    <label class="checkbox-label">
+                                                        <input type="checkbox" value="@child.category_id">
+                                                        @child.name
+                                                    </label>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                </li>
+                            }
+                        </ul>
                     </div>
 
                     <button class="reset-filters">Сбросить фильтры</button>
@@ -133,160 +162,70 @@
 
                 <!-- Сетка товаров -->
                 <div class="products-grid">
-                    <!-- Товар 1 -->
-                    <div class="product-card">
-                        <div class="product-badge hot">Хит</div>
-                        <div class="product-image">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <h3 class="product-title">iPhone 15 Pro</h3>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                            <span>4.8</span>
-                        </div>
-                        <div class="product-price">
-                            <span class="current-price">89 990 ₽</span>
-                            <span class="old-price">99 990 ₽</span>
-                        </div>
-                        <button class="add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> В корзину
-                        </button>
-                    </div>
 
-                    <!-- Товар 2 -->
-                    <div class="product-card">
-                        <div class="product-badge new">Новинка</div>
-                        <div class="product-image">
-                            <i class="fas fa-laptop"></i>
-                        </div>
-                        <h3 class="product-title">MacBook Air M3</h3>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            <span>5.0</span>
-                        </div>
-                        <div class="product-price">
-                            <span class="current-price">129 990 ₽</span>
-                            <span class="old-price">149 990 ₽</span>
-                        </div>
-                        <button class="add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> В корзину
-                        </button>
-                    </div>
+                    @foreach (var product in Model.Productt)
+                    {
+                        <div class="product-card">
 
-                    <!-- Товар 3 -->
-                    <div class="product-card">
-                        <div class="product-image">
-                            <i class="fas fa-headphones"></i>
-                        </div>
-                        <h3 class="product-title">Sony WH-1000XM5</h3>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            <span>5.0</span>
-                        </div>
-                        <div class="product-price">
-                            <span class="current-price">32 990 ₽</span>
-                        </div>
-                        <button class="add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> В корзину
-                        </button>
-                    </div>
+                            @if (product.productTags != null)
+                            {
+                                if (product.productTags.Any(t => t.Tag.tag_name == "Хит продаж"))
+                                {
+                                    <div class="product-badge hot">Хит</div>
+                                }
 
-                    <!-- Товар 4 -->
-                    <div class="product-card">
-                        <div class="product-badge sale">-20%</div>
-                        <div class="product-image">
-                            <i class="fas fa-tablet-alt"></i>
-                        </div>
-                        <h3 class="product-title">iPad Air 5</h3>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            <span>4.9</span>
-                        </div>
-                        <div class="product-price">
-                            <span class="current-price">59 990 ₽</span>
-                            <span class="old-price">74 990 ₽</span>
-                        </div>
-                        <button class="add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> В корзину
-                        </button>
-                    </div>
+                                if (product.productTags.Any(t => t.Tag.tag_name == "Новинка"))
+                                {
+                                    <div class="product-badge new">Новинка</div>
+                                }
+                            }
 
-                    <!-- Товар 5 -->
-                    <div class="product-card">
-                        <div class="product-image">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <h3 class="product-title">Apple Watch Series 9</h3>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                            <span>4.7</span>
-                        </div>
-                        <div class="product-price">
-                            <span class="current-price">41 990 ₽</span>
-                        </div>
-                        <button class="add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> В корзину
-                        </button>
-                    </div>
+                            @if (product.discount_percent > 0)
+                            {
+                                <div class="product-badge sale">
+                                    -@product.discount_percent%
+                                </div>
+                            }
 
-                    <!-- Товар 6 -->
-                    <div class="product-card">
-                        <div class="product-badge hot">Хит</div>
-                        <div class="product-image">
-                            <i class="fas fa-gamepad"></i>
-                        </div>
-                        <h3 class="product-title">PlayStation 5</h3>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            <span>4.9</span>
-                        </div>
-                        <div class="product-price">
-                            <span class="current-price">62 990 ₽</span>
-                        </div>
-                        <button class="add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> В корзину
-                        </button>
-                    </div>
+                            @* ===== IMAGE ===== *@
+                            <div class="product-image">
+                                <i class="fas fa-box"></i>
+                            </div>
 
-                    <!-- Товар 7 -->
-                    <div class="product-card">
-                        <div class="product-image">
-                            <i class="fas fa-keyboard"></i>
-                        </div>
-                        <h3 class="product-title">Механическая клавиатура</h3>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                            <span>4.9</span>
-                        </div>
-                        <div class="product-price">
-                            <span class="current-price">12 990 ₽</span>
-                        </div>
-                        <button class="add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> В корзину
-                        </button>
-                    </div>
+                            @* ===== TITLE ===== *@
+                            <h3 class="product-title">@product.name</h3>
 
-                    <!-- Товар 8 -->
-                    <div class="product-card">
-                        <div class="product-badge new">Новинка</div>
-                        <div class="product-image">
-                            <i class="fas fa-microphone"></i>
+                            @* ===== PRICE ===== *@
+                            <div class="product-price">
+
+                                <span class="current-price">
+                                    @product.price ₽
+                                </span>
+
+                                @{
+                                    var lastOldPrice = product.priceHistories?
+                                    .OrderByDescending(p => p.Product.created_date)
+                                    .FirstOrDefault()?.old_price;
+                                }
+
+                                @if (lastOldPrice != null)
+                                {
+                                    <span class="old-price">
+                                        @lastOldPrice ₽
+                                    </span>
+                                }
+
+                            </div>
+
+                            @* ===== ADD TO CART ===== *@
+                            <button class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i> В корзину
+                            </button>
+
                         </div>
-                        <h3 class="product-title">Микрофон Yeti X</h3>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                            <span>4.8</span>
-                        </div>
-                        <div class="product-price">
-                            <span class="current-price">18 990 ₽</span>
-                        </div>
-                        <button class="add-to-cart">
-                            <i class="fas fa-shopping-cart"></i> В корзину
-                        </button>
-                    </div>
+                    }
                 </div>
-            </div>
-
+        </div>
             <!-- Пагинация -->
             <div class="pagination">
                 <a href="#" class="active">1</a>
@@ -295,7 +234,6 @@
                 <a href="#">4</a>
                 <a href="#">→</a>
             </div>
-        </div>
     </main>
 
     <!-- Подвал -->
@@ -328,5 +266,28 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const list = document.querySelector('.categories-list');
+            const btnLeft = document.getElementById('btnLeft');
+            const btnRight = document.getElementById('btnRight');
+
+            btnLeft.addEventListener('click', () => {
+                list.scrollBy({
+                    left: -150,
+                    behavior: 'smooth'
+                });
+            });
+
+            btnRight.addEventListener('click', () => {
+                list.scrollBy({
+                    left: 150,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>

@@ -17,17 +17,39 @@ namespace HouseHold.Controllers
         }
 
         public async Task<IActionResult> Index()
-        { 
+        {
+            int? userId = HttpContext.Session.GetInt32("userId");
 
-            var products = await _context.products.ToListAsync();
+            Users userEntity = null;
 
-            var categoris = await _context.categories.ToListAsync();
+            if (userId != null)
+            {
+                userEntity = await _context.users.FirstOrDefaultAsync(x => x.user_id == userId.Value);
+            }
+
+            var products = await _context.products
+                .Include(p => p.productTags)
+                    .ThenInclude(pt => pt.Tag)
+                .Include(p => p.priceHistories)
+                .ToListAsync(); 
+            var categories = await _context.categories.AsNoTracking().ToListAsync();
+            var parentCat = await _context.parentCategories.Include(x => x.categories).ToListAsync();
+            var maxPrice = products.Max(p => p.price);
 
             var viewmodel = new ShopViewModel
             {
                 Productt = products,
-                Categoryy = categoris
+                Categoryy = categories,
+                parentCategories = parentCat,
+                UserId = userEntity?.user_id,
+                UserName = userEntity?.first_name,
+                MaxPrice = maxPrice,
             };
+
+            //if (categoryId != null)
+            //{
+            //    products = products.Where(x => x.category_id == categoryId).ToList();
+            //}
 
             return View(viewmodel);
         }

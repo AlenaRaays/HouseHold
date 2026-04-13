@@ -46,7 +46,7 @@ namespace HouseHold.Controllers
 
             if (user != null && user.email == loginView.Email && BCrypt.Net.BCrypt.Verify(loginView.Password, user.password))
             {
-                HttpContext.Session.SetString("UserId", user.user_id.ToString());
+                HttpContext.Session.SetInt32("userId", user.user_id);
 
                 if (loginView.RememberMe)
                 {

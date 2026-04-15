@@ -1,0 +1,56 @@
+﻿@model Users
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль</title>
+    <link rel="stylesheet" href="~/css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="profile-container">
+
+        <div class="profile-card">
+
+            <div class="profile-header">
+                <i class="fas fa-user-circle avatar"></i>
+                <h2>@Model.first_name</h2>
+                <p>ID: @Model.user_id</p>
+                <p>Роль: @Model.UserRole.role_name</p>
+            </div>
+
+            <div class="profile-info">
+
+                <div class="info-item">
+                    <span>Имя:</span>
+                    <strong>@Model.first_name</strong>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.email))
+                {
+                    <div class="info-item">
+                        <span>Email:</span>
+                        <strong>@Model.email</strong>
+                    </div>
+                }
+
+            </div>
+
+            <div class="profile-actions">
+                <a href="@Url.Action("Index", "MainShop")" class="btn back">
+                    <i class="fas fa-arrow-left"></i> Назад в магазин
+                </a>
+
+                <a href="@Url.Action("Logout", "Profile")" class="btn logout">
+                    <i class="fas fa-sign-out-alt"></i> Выйти
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

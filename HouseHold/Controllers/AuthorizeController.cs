@@ -1,5 +1,6 @@
 ﻿using BCrypt.Net;
 using HouseHold.Models;
+using HouseHold.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -51,7 +52,6 @@ namespace HouseHold.Controllers
                 if (loginView.RememberMe)
                 {
                     HttpContext.Session.SetString("email", user.email);
-                    HttpContext.Session.SetString("password", user.password);
                 }
 
                 _logger.LogInformation($"User {user.user_id} logged in");

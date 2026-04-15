@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using HouseHold.Models;
+using HouseHold.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HouseHold.Controllers

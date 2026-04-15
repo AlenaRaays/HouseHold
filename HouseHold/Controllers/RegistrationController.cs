@@ -1,6 +1,7 @@
 ﻿using BCrypt.Net;
 using HouseHold.Migrations;
 using HouseHold.Models;
+using HouseHold.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -77,8 +78,8 @@ namespace HouseHold.Controllers
                 await _context.SaveChangesAsync();
 
                 HttpContext.Session.SetString("email", user.email);
-                HttpContext.Session.SetString("UserId", user.user_id.ToString());
-                HttpContext.Session.SetString("UserName", $"{user.first_name} {user.last_name}");
+                HttpContext.Session.SetInt32("userId", user.user_id);
+                HttpContext.Session.SetString("userName", $"{user.first_name} {user.last_name}");
 
                 _logger.LogInformation($"Новый пользователь зарегистрирован: {user.email}");
 

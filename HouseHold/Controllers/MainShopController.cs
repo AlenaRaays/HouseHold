@@ -16,12 +16,10 @@ namespace HouseHold.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(
-             List<int> categoryId,
-             decimal? minprice,
-            decimal? maxprice)
+        public async Task<IActionResult> Index(List<int>? PcategoryId, List<int>? categoryId, decimal? minprice, decimal? maxprice, string sortby, string searchQuery)
         {
             int? userId = HttpContext.Session.GetInt32("userId");
+            ViewBag.SortedBy = sortby;
 
             Users userEntity = null;
 
@@ -31,26 +29,48 @@ namespace HouseHold.Controllers
             }
 
             var productsQuery = _context.products
+                .Include(p => p.category)
                 .Include(p => p.productTags).ThenInclude(pt => pt.Tag)
                 .Include(p => p.priceHistories)
                 .AsQueryable();
 
-            if (categoryId != null && categoryId.Any())
+            if (sortby != null || PcategoryId != null || categoryId != null || minprice.HasValue || maxprice.HasValue || searchQuery != null) 
             {
-                productsQuery = productsQuery
-                    .Where(p => categoryId.Contains(p.category_id));
-            }
+                if (PcategoryId != null && PcategoryId.Any())
+                {
+                    productsQuery = productsQuery.Where(x => PcategoryId.Contains(x.category.parent_category_id));
+                }
+                if (categoryId != null && categoryId.Any())
+                {
+                    productsQuery = productsQuery.Where(p => categoryId.Contains(p.category_id));
+                }
 
-            if (minprice.HasValue)
-            {
-                productsQuery = productsQuery
-                    .Where(p => p.price >= minprice.Value);
-            }
+                if (minprice.HasValue)
+                {
+                    productsQuery = productsQuery.Where(p => p.price >= minprice.Value);
+                }
+                if (maxprice.HasValue)
+                {
+                    productsQuery = productsQuery.Where(p => p.price <= maxprice.Value);
+                }
 
-            if (maxprice.HasValue)
-            {
-                productsQuery = productsQuery
-                    .Where(p => p.price <= maxprice.Value);
+                if (searchQuery != null)
+                {
+                    productsQuery = productsQuery.Where(p => p.name.Contains(searchQuery));
+                }
+
+                if (ViewBag.SortedBy == "price_asc")
+                {
+                    productsQuery = productsQuery.OrderBy(x => x.price);
+                }
+                else if (ViewBag.SortedBy == "price_desc")
+                {
+                    productsQuery = productsQuery.OrderByDescending(x => x.price);
+                }
+                else if (ViewBag.SortedBy == "new")
+                {
+                    productsQuery = productsQuery.OrderBy(x => x.created_date);
+                }
             }
 
             var products = await productsQuery.ToListAsync();
@@ -63,9 +83,9 @@ namespace HouseHold.Controllers
                 .Include(x => x.categories)
                 .ToListAsync();
 
-            var maxPrice = products.Any()
+            decimal? maxPrice = products.Any()
                 ? products.Max(p => p.price)
-                : 0;
+                : null;
 
             var viewmodel = new ShopViewModel
             {
@@ -76,10 +96,12 @@ namespace HouseHold.Controllers
                 UserId = userEntity?.user_id,
                 UserName = userEntity?.first_name,
 
-                MaxPrice = maxPrice,
-
-                SelectedCategories = categoryId,
-                MinPrice = minprice
+                MaxPrice = maxprice ?? maxPrice,
+                MinPrice = minprice,
+                CategoryId = categoryId,
+                PcategoryId = PcategoryId,
+                SortBy = sortby,
+                SearchQuery = searchQuery
             };
 
             return View(viewmodel);

@@ -1,0 +1,125 @@
+﻿body {
+    margin: 0;
+    font-family: 'Segoe UI', 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #020617);
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: transparent;
+}
+
+/* карточка */
+.profile-card {
+    width: 420px;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    transition: all 0.25s ease;
+}
+
+    .profile-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(99, 102, 241, 0.25);
+        box-shadow: 0 15px 35px rgba(99, 102, 241, 0.12);
+    }
+
+/* avatar */
+.avatar {
+    font-size: 90px;
+    color: #6366f1;
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+    margin-bottom: 10px;
+}
+
+/* header */
+.profile-header h2 {
+    margin: 10px 0 5px;
+    font-size: 22px;
+    font-weight: 500;
+    color: #c7d2fe;
+}
+
+.profile-header p {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+/* info block */
+.profile-info {
+    text-align: left;
+    margin: 24px 0;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(2, 6, 23, 0.4);
+    border: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+    .info-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-item strong {
+        color: #e2e8f0;
+    }
+
+/* buttons */
+.profile-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+    /* back button */
+    .btn.back {
+        background: rgba(99, 102, 241, 0.15);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        color: #a5b4fc;
+    }
+
+        .btn.back:hover {
+            background: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+    /* logout button */
+    .btn.logout {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+    }
+
+        .btn.logout:hover {
+            background: rgba(239, 68, 68, 0.25);
+            transform: translateY(-2px);
+        }

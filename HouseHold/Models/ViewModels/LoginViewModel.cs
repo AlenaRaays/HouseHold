@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HouseHold.Models
+namespace HouseHold.Models.ViewModels
 {
     public class LoginViewModel
     {

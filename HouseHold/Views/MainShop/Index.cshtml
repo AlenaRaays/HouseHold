@@ -19,12 +19,17 @@
                     <i class="fas fa-microchip"></i>
                     <span>HouseHold</span>
                 </div>
-
-                <div class="search-bar">
+                <form method="get" asp-action="Index" asp-controller="MainShop">
+                    <div class="search-bar">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Поиск товаров...">
-                    <button class="search-btn">Найти</button>
-                </div>
+                        <input 
+                            type="text" 
+                            placeholder="Поиск товаров..."
+                            name="searchQuery"
+                            value="@Model.SearchQuery">
+                        <button class="search-btn" type="submit">Найти</button>
+                    </div>
+                </form>
 
                 <div class="header-icons">
                     <a href="#" class="icon-btn cart">
@@ -34,7 +39,7 @@
                     
                     @if (Model.UserId != null)
                     {
-                        <a href="#" class="icon-btn login">
+                        <a href="@Url.Action("Index", "Profile")" class="icon-btn login">
                             <i class="fas fa-user-circle"></i>
                             <span>@Model.UserName</span>
                         </a>
@@ -51,28 +56,6 @@
         </div>
     </header>
 
-    <!-- Навигационное меню категорий -->
-    <nav class="categories-nav">
-        <button id="btnLeft" class="scroll-btn left">&#10094;</button>
-        <ul class="categories-list">
-            <li>
-                <a href="@Url.Action("Index", "MainShop")" class="active">
-                    Все товары
-                </a>
-            </li>
-
-            @foreach (var cat in Model.Categoryy)
-            {
-                <li>
-                    <a href="@Url.Action("Index", "MainShop", new { categoryId = cat.category_id })">
-                        @cat.name
-                    </a>
-                </li>
-            }
-        </ul>
-        <button id="btnRight" class="scroll-btn right">&#10095;</button>
-    </nav>
-
     <!-- Баннер / акция -->
     <section class="promo-banner">
         <div class="container">
@@ -85,46 +68,36 @@
     <!-- Основной контент: каталог товаров -->
     <main class="main-content">
         <div class="container">
-            <!-- Фильтры и сортировка -->
-            <div class="catalog-header">
-                <h1>Каталог товаров</h1>
-                <div class="sort-options">
-                    <span>Сортировать:</span>
-                    <select class="sort-select">
-                        <option value="popular">По популярности</option>
-                        <option value="price_asc">Сначала дешевле</option>
-                        <option value="price_desc">Сначала дороже</option>
-                        <option value="new">По новизне</option>
-                    </select>
+            <form method="get" asp-action="Index" asp-controller="MainShop" onchange="this.form.submit()">
+                <div class="catalog-header">
+                    <h1>Каталог товаров</h1>
+                    <div class="sort-options">
+                        <span>Сортировать:</span>
+                            <select class="sort-select" name="sortby" onchange="this.form.submit()">
+                                <option value="default">По умолчанию</option>
+                                <option value="price_asc" selected="@(Model.SortBy == "price_asc")">Сначала дешевле</option>
+                                <option value="price_desc" selected="@(Model.SortBy == "price_desc")">Сначала дороже</option>
+                                <option value="new" selected="@(Model.SortBy == "new")">По новизне</option>
+                            </select>
+                    </div>
                 </div>
-            </div>
-
-            <div class="catalog-layout">
-                <!-- Боковой фильтр -->
-                <aside class="filters-sidebar">
-                    <form method="get" asp-controller="MainShop" asp-action="Index">
+                <div class="catalog-layout">
+                    <!-- Боковой фильтр -->
+                    <aside class="filters-sidebar">
                         <div class="filter-section">
                             <h3><i class="fas fa-sliders-h"></i> Цена</h3>
-
-                            <input type="range"
-                                   min="0"
-                                   max="@Model.MaxPrice"
-                                   value="@Model.MaxPrice" />
 
                             <div class="price-inputs">
 
                                 <input type="number"
-                                       name="minprice"
-                                       value="@Model.MinPrice"
-                                       onchange="this.form.submit()" />
-
+                                        name="minprice"
+                                        value="@Model.MinPrice"
+                                        onchange="this.form.submit()" />
                                 <span>—</span>
-
                                 <input type="number"
-                                       name="maxprice"
-                                       value="@Model.MaxPrice"
-                                       onchange="this.form.submit()" />
-
+                                        name="maxprice"
+                                        value="@Model.MaxPrice"
+                                        onchange="this.form.submit()" />
                             </div>
                         </div>
 
@@ -139,10 +112,10 @@
 
                                         <label class="checkbox-label">
                                             <input type="checkbox"
-                                                   name="categoryId"
-                                                   value="@parent.parent_category_id"
-                                                   onchange="this.form.submit()"
-                                                   @(Model.SelectedCategories?.Contains(parent.parent_category_id) == true ? "checked" : "") />
+                                                    name="PcategoryId"
+                                                    value="@parent.parent_category_id"
+                                                    onchange="this.form.submit()"
+                                                    @(Model.PcategoryId.Contains(parent.parent_category_id) ? "checked" : "")/>
                                             @parent.name
                                         </label>
 
@@ -154,11 +127,10 @@
                                                     <li>
                                                         <label class="checkbox-label">
                                                             <input type="checkbox"
-                                                                   name="categoryId"
-                                                                   value="@child.category_id"
-                                                                   onchange="this.form.submit()"
-                                                                   @(Model.SelectedCategories?.Contains(child.category_id) == true ? "checked" : "") />
-
+                                                                    name="categoryId"
+                                                                    value="@child.category_id"
+                                                                    onchange="this.form.submit()"
+                                                                    @(Model.CategoryId.Contains(child.category_id) ? "checked" : "") />
                                                             @child.name
                                                         </label>
                                                     </li>
@@ -167,88 +139,78 @@
                                         }
                                     </li>
                                 }
-
                             </ul>
                         </div>
                         <button class="reset-filters">Сбросить фильтры</button>
-                    </form>
-                </aside>
+                    </aside>
+                
+                    <!-- Сетка товаров -->
+                    <div class="products-grid">
+                        @foreach (var product in Model.Productt)
+                        {
+                            <div class="product-card">
 
-                <!-- Сетка товаров -->
-                <div class="products-grid">
-
-                    @foreach (var product in Model.Productt)
-                    {
-                        <div class="product-card">
-
-                            @if (product.productTags != null)
-                            {
-                                if (product.productTags.Any(t => t.Tag.tag_name == "Хит продаж"))
+                                @if (product.productTags != null)
                                 {
-                                    <div class="product-badge hot">Хит</div>
+                                    if (product.productTags.Any(t => t.Tag.tag_name == "Хит продаж"))
+                                    {
+                                        <div class="product-badge hot">Хит</div>
+                                    }
+
+                                    if (product.productTags.Any(t => t.Tag.tag_name == "Новинка"))
+                                    {
+                                        <div class="product-badge new">Новинка</div>
+                                    }
                                 }
 
-                                if (product.productTags.Any(t => t.Tag.tag_name == "Новинка"))
+                                @if (product.discount_percent > 0)
                                 {
-                                    <div class="product-badge new">Новинка</div>
+                                    <div class="product-badge sale">
+                                        -@product.discount_percent%
+                                    </div>
                                 }
-                            }
 
-                            @if (product.discount_percent > 0)
-                            {
-                                <div class="product-badge sale">
-                                    -@product.discount_percent%
+                                @* ===== IMAGE ===== *@
+                                <div class="product-image">
+                                    <i class="fas fa-box"></i>
                                 </div>
-                            }
 
-                            @* ===== IMAGE ===== *@
-                            <div class="product-image">
-                                <i class="fas fa-box"></i>
-                            </div>
+                                @* ===== TITLE ===== *@
+                                <h3 class="product-title">@product.name</h3>
 
-                            @* ===== TITLE ===== *@
-                            <h3 class="product-title">@product.name</h3>
+                                @* ===== PRICE ===== *@
+                                <div class="product-price">
 
-                            @* ===== PRICE ===== *@
-                            <div class="product-price">
-
-                                <span class="current-price">
-                                    @product.price ₽
-                                </span>
-
-                                @{
-                                    var lastOldPrice = product.priceHistories?
-                                    .OrderByDescending(p => p.Product.created_date)
-                                    .FirstOrDefault()?.old_price;
-                                }
-
-                                @if (lastOldPrice != null)
-                                {
-                                    <span class="old-price">
-                                        @lastOldPrice ₽
+                                    <span class="current-price">
+                                        @product.price ₽
                                     </span>
-                                }
+
+                                    @{
+                                        var lastOldPrice = product.priceHistories?
+                                        .OrderByDescending(p => p.Product.created_date)
+                                        .FirstOrDefault()?.old_price;
+                                    }
+
+                                    @if (lastOldPrice != null)
+                                    {
+                                        <span class="old-price">
+                                            @lastOldPrice ₽
+                                        </span>
+                                    }
+
+                                </div>
+
+                                @* ===== ADD TO CART ===== *@
+                                <button class="add-to-cart">
+                                    <i class="fas fa-shopping-cart"></i> В корзину
+                                </button>
 
                             </div>
-
-                            @* ===== ADD TO CART ===== *@
-                            <button class="add-to-cart">
-                                <i class="fas fa-shopping-cart"></i> В корзину
-                            </button>
-
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
-            <!-- Пагинация -->
-            <div class="pagination">
-                <a href="#" class="active">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#">4</a>
-                <a href="#">→</a>
-            </div>
     </main>
 
     <!-- Подвал -->

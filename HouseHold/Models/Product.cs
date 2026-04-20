@@ -11,7 +11,7 @@ namespace HouseHold.Models
         public double discount_percent { get; set; }
         [Required] public int amount { get; set; }
         [MaxLength(500)] public string description { get; set; }
-        [Required] public decimal price { get; set; }
+        [Required] public double price { get; set; }
         [Required] public bool is_visible { get; set; }
         [Required] public DateTime created_date { get; set; }
         [Required] public int supplier_id { get; set; }

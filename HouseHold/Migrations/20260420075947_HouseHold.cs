@@ -203,7 +203,7 @@ namespace HouseHold.Migrations
                         column: x => x.supplier_id,
                         principalTable: "suppliers",
                         principalColumn: "supplier_id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(

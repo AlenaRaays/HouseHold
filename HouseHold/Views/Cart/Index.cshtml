@@ -5,54 +5,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HouseHold — Магазин электроники</title>
+    <title>Корзина — HouseHold</title>
+    <link rel="stylesheet" href="~/css/mainshop.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+    <!-- Шапка сайта -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-microchip"></i>
+                    <span>HouseHold</span>
+                </div>
 
-    <h2>Корзина</h2>
-    <a href="@Url.Action("Index","MainShop")">На главную</a>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Поиск товаров...">
+                    <button class="search-btn">Найти</button>
+                </div>
 
-    @if (!Model.Items.Any())
-    {
-        <p>Корзина пуста</p>
-    }
-    else
-    {
-        <table>
-            <tr>
-                <th>Товар</th>
-                <th>Цена</th>
-                <th>Количество</th>
-                <th>Сумма</th>
-                <th></th>
-            </tr>
+                <div class="header-icons">
+                    <a href="@Url.Action("Index", "Favorite")" class="icon-btn favorites">
+                        <i class="fas fa-heart"></i>
+                    </a>
 
-            @foreach (var item in Model.Items)
+                    <a href="@Url.Action("Index", "Cart")" class="icon-btn cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            <span class="badge">@Model.Items.Sum(i => i.Quantity)</span>
+                        }
+                    </a>
+
+                    @if (Context.Session.GetInt32("userId") != null)
+                    {
+                        <a href="@Url.Action("Index", "Profile")" class="icon-btn login">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Профиль</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Index", "Authorize")" class="icon-btn login">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Войти</span>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="cart-page">
+        <div class="container">
+            <!-- Хлебные крошки -->
+            <div class="breadcrumbs">
+                <a href="@Url.Action("Index", "MainShop")">Главная</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Корзина</span>
+            </div>
+
+            <!-- Сообщения -->
+            @if (TempData["Success"] != null)
             {
-                <tr>
-                    <td>@item.Name</td>
-                    <td>@item.Price</td>
-
-                    <td>
-                        <form asp-action="Update" method="post">
-                            <input type="hidden" name="productId" value="@item.ProductId" />
-                            <input type="number" name="quantity" value="@item.Quantity" min="1" />
-                            <button type="submit">OK</button>
-                        </form>
-                    </td>
-
-                    <td>@item.Total</td>
-
-                    <td>
-                        <a asp-action="Remove" asp-route-productId="@item.ProductId">Удалить</a>
-                    </td>
-                </tr>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> @TempData["Success"]
+                </div>
             }
-        </table>
 
-        <h3>Итого: @Model.GrandTotal</h3>
-    }
-    </body>
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+                </div>
+            }
+
+            @if (Model.Items == null || !Model.Items.Any())
+            {
+                <!-- Пустая корзина -->
+                <div class="empty-cart">
+                    <div class="empty-cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h2>Ваша корзина пуста</h2>
+                    <p>Добавьте товары в корзину, чтобы оформить заказ</p>
+                    <div class="empty-cart-actions">
+                        <a href="@Url.Action("Index", "MainShop")" class="go-shopping-btn">
+                            <i class="fas fa-shopping-bag"></i> Перейти к покупкам
+                        </a>
+                        <a href="@Url.Action("Index", "Favorite")" class="go-favorites-btn">
+                            <i class="far fa-heart"></i> Посмотреть избранное
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Заголовок корзины -->
+                <div class="cart-header">
+                    <h1>
+                        <i class="fas fa-shopping-cart"></i>
+                        Корзина
+                        <span class="cart-count">(@Model.Items.Sum(i => i.Quantity) товара)</span>
+                    </h1>
+                    
+                    <form asp-action="Clear" method="post" onsubmit="return confirm('Вы уверены, что хотите очистить корзину?');">
+                        <button type="submit" class="clear-cart-btn">
+                            <i class="fas fa-trash-alt"></i> Очистить корзину
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Содержимое корзины -->
+                <div class="cart-content">
+                    <!-- Список товаров -->
+                    <div class="cart-items">
+                        @foreach (var item in Model.Items)
+                        {
+                            <div class="cart-item">
+                                <!-- Изображение -->
+                                <div class="cart-item-image">
+                                    <i class="fas fa-box"></i>
+                                </div>
+
+                                <!-- Информация -->
+                                <div class="cart-item-info">
+                                    <a href="#" class="cart-item-title">@item.Name</a>
+                                    <div class="cart-item-article">
+                                        @if (!string.IsNullOrEmpty(item.Article))
+                                        {
+                                            <span>Артикул: @item.Article</span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Цена за единицу -->
+                                <div class="cart-item-price">
+                                    <span class="current-price">@item.Price.ToString("N0") ₽</span>
+                                    @if (item.OldPrice.HasValue && item.OldPrice > item.Price)
+                                    {
+                                        <span class="old-price">@item.OldPrice.Value.ToString("N0") ₽</span>
+                                    }
+                                </div>
+
+                                <!-- Количество -->
+                                <div class="cart-item-quantity">
+                                    <form asp-action="Update" method="post" class="quantity-form">
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <button type="submit" name="quantity" value="@(item.Quantity - 1)" class="quantity-btn" @(item.Quantity <= 1 ? "disabled" : "")>
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number" 
+                                               name="quantity" 
+                                               value="@item.Quantity" 
+                                               min="1" 
+                                               max="99"
+                                               class="quantity-input"
+                                               onchange="this.form.submit()" />
+                                        <button type="submit" name="quantity" value="@(item.Quantity + 1)" class="quantity-btn">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Сумма -->
+                                <div class="cart-item-total">
+                                    <div class="total-label">Сумма</div>
+                                    <div class="total-value">@item.Total.ToString("N0") ₽</div>
+                                </div>
+
+                                <!-- Удалить -->
+                                <form asp-action="Remove" method="post" onsubmit="return confirm('Удалить товар из корзины?');">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <button type="submit" class="cart-item-remove">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Сводка -->
+                    <div class="cart-summary">
+                        <h3>
+                            <i class="fas fa-receipt"></i>
+                            Ваш заказ
+                        </h3>
+
+                        <div class="summary-row">
+                            <span>Товары (@Model.Items.Sum(i => i.Quantity))</span>
+                            <span>@Model.SubTotal.ToString("N0") ₽</span>
+                        </div>
+
+                        @if (Model.Discount > 0)
+                        {
+                            <div class="summary-row discount">
+                                <span>Скидка</span>
+                                <span>-@Model.Discount.ToString("N0") ₽</span>
+                            </div>
+                        }
+
+                        <div class="summary-row total">
+                            <span>Итого</span>
+                            <span>@Model.GrandTotal.ToString("N0") ₽</span>
+                        </div>
+
+                        <a href="@Url.Action("Checkout", "Order")" class="checkout-btn">
+                            <i class="fas fa-check"></i> Оформить заказ
+                        </a>
+
+                        <a href="@Url.Action("Index", "MainShop")" class="continue-shopping">
+                            <i class="fas fa-arrow-left"></i> Продолжить покупки
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <i class="fas fa-microchip"></i>
+                        <span>HouseHold</span>
+                    </div>
+                    <p>Лучшие электронные товары по доступным ценам</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <p><i class="fas fa-phone"></i> +7 (800) 555-35-35</p>
+                    <p><i class="fas fa-envelope"></i> info@household.ru</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Мы в соцсетях</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 HouseHold. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Автоматическая отправка формы при изменении количества через input
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantityInputs = document.querySelectorAll('.quantity-input');
+            quantityInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    let value = parseInt(this.value);
+                    if (value < 1) this.value = 1;
+                    if (value > 99) this.value = 99;
+                    this.closest('form').submit();
+                });
+            });
+        });
+    </script>
+</body>
 </html>

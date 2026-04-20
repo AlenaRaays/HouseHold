@@ -1,0 +1,211 @@
+﻿@model HouseHold.Models.ViewModels.CheckoutViewModel
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформление заказа — HouseHold</title>
+    <link rel="stylesheet" href="~/css/mainshop.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/checkout.css" asp-append-version="true">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-microchip"></i>
+                    <span>HouseHold</span>
+                </div>
+                <div class="header-icons">
+                    <a href="@Url.Action("Index", "Cart")" class="icon-btn cart">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+                    <a href="@Url.Action("Index", "Profile")" class="icon-btn login">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Профиль</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="checkout-page">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="@Url.Action("Index", "MainShop")">Главная</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="@Url.Action("Index", "Cart")">Корзина</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Оформление заказа</span>
+            </div>
+
+            <h1 class="checkout-title">
+                <i class="fas fa-clipboard-list"></i>
+                Оформление заказа
+            </h1>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+                </div>
+            }
+
+            <div class="checkout-content">
+                <div class="checkout-main">
+                    <form asp-action="Checkout" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Данные покупателя -->
+                        <div class="checkout-section">
+                            <h3><i class="fas fa-user"></i> Данные покупателя</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Имя</label>
+                                    <input type="text" class="form-control" value="@Context.Session.GetString("UserName")" readonly />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Адрес доставки -->
+                        <div class="checkout-section">
+                            <h3><i class="fas fa-map-marker-alt"></i> Адрес доставки</h3>
+                            <div class="form-group">
+                                <label asp-for="DeliveryAddress">Адрес <span class="required">*</span></label>
+                                <textarea asp-for="DeliveryAddress" class="form-control" rows="3" placeholder="Город, улица, дом, квартира" required></textarea>
+                                <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Способ доставки -->
+                        <div class="checkout-section">
+                            <h3><i class="fas fa-truck"></i> Способ доставки</h3>
+                            <div class="delivery-methods">
+                                @foreach (var method in Model.DeliveryMethods)
+                                {
+                                    <label class="delivery-option">
+                                        <input type="radio" name="DeliveryMethodId" value="@method.delivery_method_id"
+                                               @(method.delivery_method_id == Model.DeliveryMethodId ? "checked" : "") required />
+                                        <div class="delivery-info">
+                                            <span class="delivery-name">@method.name</span>
+                                            <span class="delivery-cost">@method.cost.ToString("N0") ₽</span>
+                                            <span class="delivery-days">@method.delivery_days дн.</span>
+                                        </div>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Способ оплаты -->
+                        <div class="checkout-section">
+                            <h3><i class="fas fa-credit-card"></i> Способ оплаты</h3>
+                            <div class="payment-methods">
+                                @foreach (var method in Model.PaymentMethods)
+                                {
+                                    <label class="payment-option">
+                                        <input type="radio" name="PaymentMethodId" value="@method.payment_method_id"
+                                               @(method.payment_method_id == Model.PaymentMethodId ? "checked" : "") required />
+                                        <span>@method.name</span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Комментарий -->
+                        <div class="checkout-section">
+                            <h3><i class="fas fa-comment"></i> Комментарий к заказу</h3>
+                            <div class="form-group">
+                                <textarea asp-for="OrderComment" class="form-control" rows="2" placeholder="Дополнительная информация (необязательно)"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <a href="@Url.Action("Index", "Cart")" class="btn-back">
+                                <i class="fas fa-arrow-left"></i> Вернуться в корзину
+                            </a>
+                            <button type="submit" class="btn-submit">
+                                <i class="fas fa-check"></i> Подтвердить заказ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Сводка заказа -->
+                <div class="checkout-sidebar">
+                    <div class="order-summary">
+                        <h3>Ваш заказ</h3>
+
+                        <div class="order-items">
+                            @foreach (var item in Model.Items)
+                            {
+                                <div class="order-item">
+                                    <div class="item-info">
+                                        <span class="item-name">@item.Name</span>
+                                        <span class="item-quantity">× @item.Quantity</span>
+                                    </div>
+                                    <span class="item-price">@((item.Price * item.Quantity).ToString("N0")) ₽</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="summary-totals">
+                            <div class="summary-row">
+                                <span>Товары (@Model.Items.Sum(i => i.Quantity))</span>
+                                <span>@Model.SubTotal.ToString("N0") ₽</span>
+                            </div>
+
+                            @if (Model.Discount > 0)
+                            {
+                                <div class="summary-row discount">
+                                    <span>Скидка</span>
+                                    <span>-@Model.Discount.ToString("N0") ₽</span>
+                                </div>
+                            }
+
+                            <div class="summary-row">
+                                <span>Доставка</span>
+                                <span id="deliveryCost">0 ₽</span>
+                            </div>
+
+                            <div class="summary-row total">
+                                <span>Итого</span>
+                                <span id="totalAmount">@((Model.SubTotal - Model.Discount).ToString("N0")) ₽</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>© 2026 HouseHold. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Обновление стоимости доставки при выборе метода
+        document.querySelectorAll('input[name="DeliveryMethodId"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const deliveryCost = this.closest('.delivery-option').querySelector('.delivery-cost').textContent;
+                document.getElementById('deliveryCost').textContent = deliveryCost;
+                updateTotal();
+            });
+        });
+
+        function updateTotal() {
+            const subTotal = @Model.SubTotal;
+            const discount = @Model.Discount;
+            const deliveryCostText = document.getElementById('deliveryCost').textContent;
+            const deliveryCost = parseFloat(deliveryCostText.replace(/[^\d]/g, '')) || 0;
+            const total = subTotal - discount + deliveryCost;
+            document.getElementById('totalAmount').textContent = total.toLocaleString() + ' ₽';
+        }
+    </script>
+</body>
+</html>

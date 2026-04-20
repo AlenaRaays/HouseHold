@@ -16,7 +16,7 @@ namespace HouseHold.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(List<int>? PcategoryId, List<int>? categoryId, decimal? minprice, decimal? maxprice, string sortby, string searchQuery)
+        public async Task<IActionResult> Index(List<int>? PcategoryId, List<int>? categoryId, double? minprice, double? maxprice, string sortby, string searchQuery)
         {
             int? userId = HttpContext.Session.GetInt32("userId");
             ViewBag.SortedBy = sortby;
@@ -83,7 +83,7 @@ namespace HouseHold.Controllers
                 .Include(x => x.categories)
                 .ToListAsync();
 
-            decimal? maxPrice = products.Any()
+            double? maxPrice = products.Any()
                 ? products.Max(p => p.price)
                 : null;
 
@@ -103,6 +103,25 @@ namespace HouseHold.Controllers
                 SortBy = sortby,
                 SearchQuery = searchQuery
             };
+
+            if (userId != null)
+            {
+                var cart = await _context.Carts
+                    .FirstOrDefaultAsync(c => c.user_id == userId);
+
+                if (cart != null)
+                {
+                    // Считаем количество товаров в корзине
+                    viewmodel.CartItemsCount = await _context.CartItems
+                        .Where(ci => ci.cart_id == cart.cart_id)
+                        .SumAsync(ci => ci.quantity);
+                }
+
+                viewmodel.FavoriteProductIds = await _context.favorites
+                    .Where(f => f.user_id == userId)
+                    .Select(f => f.product_id)
+                    .ToListAsync();
+            }
 
             return View(viewmodel);
         }

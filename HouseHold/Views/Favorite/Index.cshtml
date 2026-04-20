@@ -1,0 +1,168 @@
+﻿@model HouseHold.Models.FavoriteViewModel
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Избранное — HouseHold</title>
+    <link rel="stylesheet" href="~/css/mainshop.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/favorites.css" asp-append-version="true">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="@Url.Action("Index", "MainShop")">Главная</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Избранное</span>
+            </div>
+
+            <div class="favorites-header">
+                <h1>
+                    <i class="fas fa-heart"></i>
+                    Избранные товары
+                    <span class="favorites-count">(@Model.TotalCount)</span>
+                </h1>
+
+                @if (Model.TotalCount > 0)
+                {
+                    using (Html.BeginForm("ClearAll", "Favorite", FormMethod.Post, new { onsubmit = "return confirm('Вы уверены, что хотите очистить весь список избранного?');" }))
+                    {
+                        <button type="submit" class="clear-all-btn">
+                            <i class="fas fa-trash-alt"></i> Очистить все
+                        </button>
+                    }
+                }
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> @TempData["Success"]
+                </div>
+            }
+
+            @if (TempData["Info"] != null)
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> @TempData["Info"]
+                </div>
+            }
+
+            @if (Model.TotalCount > 0)
+            {
+                <div class="favorites-grid">
+                    @foreach (var favorite in Model.Favorites)
+                    {
+                        var product = favorite.Product;
+
+                        <div class="product-card">
+                            @if (product.productTags != null)
+                            {
+                                if (product.productTags.Any(t => t.Tag.tag_name == "Хит продаж"))
+                                {
+                                    <div class="product-badge hot">Хит</div>
+                                }
+                                if (product.productTags.Any(t => t.Tag.tag_name == "Новинка"))
+                                {
+                                    <div class="product-badge new">Новинка</div>
+                                }
+                            }
+
+                            @if (product.discount_percent > 0)
+                            {
+                                <div class="product-badge sale">-@product.discount_percent%</div>
+                            }
+
+                            <div class="product-image">
+                                <i class="fas fa-box"></i>
+                            </div>
+
+                            <h3 class="product-title">@product.name</h3>
+
+                            <div class="product-price">
+                                <span class="current-price">@product.price ₽</span>
+                                @{
+                                    var lastOldPrice = product.priceHistories?
+                                    .OrderByDescending(p => p.Product.created_date)
+                                    .FirstOrDefault()?.old_price;
+                                }
+                                @if (lastOldPrice != null)
+                                {
+                                    <span class="old-price">@lastOldPrice ₽</span>
+                                }
+                            </div>
+
+                            <div class="added-date">
+                                <i class="far fa-clock"></i>
+                                Добавлено: @favorite.added_date.ToString("dd.MM.yyyy")
+                            </div>
+
+                            <div class="product-actions">
+                                <button class="add-to-cart">
+                                    <i class="fas fa-shopping-cart"></i> В корзину
+                                </button>
+
+                                @using (Html.BeginForm("Remove", "Favorite", FormMethod.Post))
+                                {
+                                    <input type="hidden" name="productId" value="@product.product_id" />
+                                    <input type="hidden" name="returnUrl" value="@Url.Action("Index", "Favorite")" />
+                                    <button type="submit" class="remove-favorite-btn">
+                                        <i class="fas fa-trash-alt"></i> Удалить
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-favorites">
+                    <i class="far fa-heart"></i>
+                    <h2>В избранном пока пусто</h2>
+                    <p>Добавляйте товары в избранное, чтобы не потерять их</p>
+                    <a href="@Url.Action("Index", "MainShop")" class="go-shopping-btn">
+                        <i class="fas fa-shopping-bag"></i> Перейти к покупкам
+                    </a>
+                </div>
+            }
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="logo">
+                        <i class="fas fa-microchip"></i>
+                        <span>HouseHold</span>
+                    </div>
+                    <p>Лучшие электронные товары по доступным ценам</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <p><i class="fas fa-phone"></i> +7 (800) 555-35-35</p>
+                    <p><i class="fas fa-envelope"></i> info@technomarket.ru</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Мы в соцсетях</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-vk"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 HouseHold. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

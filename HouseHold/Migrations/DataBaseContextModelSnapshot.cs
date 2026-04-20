@@ -169,6 +169,33 @@ namespace HouseHold.Migrations
                     b.ToTable("deliveryMethods");
                 });
 
+            modelBuilder.Entity("HouseHold.Models.Favorite", b =>
+                {
+                    b.Property<int>("favorite_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("favorite_id"));
+
+                    b.Property<DateTime>("added_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("product_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("user_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("favorite_id");
+
+                    b.HasIndex("product_id");
+
+                    b.HasIndex("user_id", "product_id")
+                        .IsUnique();
+
+                    b.ToTable("favorites");
+                });
+
             modelBuilder.Entity("HouseHold.Models.Manufacturer", b =>
                 {
                     b.Property<int>("manufacturer_id")
@@ -415,8 +442,8 @@ namespace HouseHold.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<decimal>("price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("price")
+                        .HasColumnType("float");
 
                     b.Property<int>("supplier_id")
                         .HasColumnType("int");
@@ -750,6 +777,25 @@ namespace HouseHold.Migrations
                     b.Navigation("product");
 
                     b.Navigation("users");
+                });
+
+            modelBuilder.Entity("HouseHold.Models.Favorite", b =>
+                {
+                    b.HasOne("HouseHold.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("product_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HouseHold.Models.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HouseHold.Models.Manufacturer", b =>

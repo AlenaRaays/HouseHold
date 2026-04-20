@@ -10,12 +10,15 @@
         <form id="registerForm" class="register-form" method="post" asp-action="Index" asp-controller="Registration">
             <h2>Регистрация</h2>
 
-            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+            @if (!ViewData.ModelState.IsValid)
             {
                 <div class="alert">
-                    @foreach (var error in ViewData.ModelState[string.Empty].Errors)
+                    @foreach (var modelState in ViewData.ModelState.Values)
                     {
-                        <p>@error.ErrorMessage</p>
+                        foreach (var error in modelState.Errors)
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
                     }
                 </div>
             }

@@ -6,15 +6,22 @@ namespace HouseHold.Models.ViewModels
     {
         public int ProductId { get; set; }
         public string Name { get; set; }
-        public decimal Price { get; set; }
+        public string Article { get; set; }
+        public double Price { get; set; }
+        public double? OldPrice { get; set; }
         public int Quantity { get; set; }
+        public double Total => Price * Quantity;
 
-        public decimal Total => Price * Quantity;
+
     }
 
     public class CartViewModel
     {
         public List<CartItemViewModel> Items { get; set; } = new();
-        public decimal GrandTotal => Items.Sum(x => x.Total);
+        public double SubTotal => Items?.Sum(i => i.Total) ?? 0;
+
+        public double Discount { get; set; }
+
+        public double GrandTotal => SubTotal - Discount;
     }
 }

@@ -32,9 +32,20 @@
                 </form>
 
                 <div class="header-icons">
+                    <a href="@Url.Action("Index", "Favorite")" class="icon-btn favorites">
+                    <i class="fas fa-heart"></i>
+                        @if (Model.UserId != null && Model.FavoriteProductIds != null)
+                        {
+                            <span class="badge">@Model.FavoriteProductIds.Count</span>
+                        }
+                    </a>
+
                     <a href="@Url.Action("Index","Cart")" class="icon-btn cart">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="badge"></span>
+                        @if (Model.UserId != null && Model.CartItemsCount != null)
+                        {
+                            <span class="badge">@Model.CartItemsCount</span>
+                        }
                     </a>
                     
                     @if (Model.UserId != null)
@@ -143,7 +154,8 @@
                         </div>
                         <button class="reset-filters">Сбросить фильтры</button>
                     </aside>
-                
+            </form>
+
                     <!-- Сетка товаров -->
                     <div class="products-grid">
                         @foreach (var product in Model.Productt)
@@ -176,10 +188,22 @@
 
                                 <h3 class="product-title">@product.name</h3>
 
+                                <div class="product-stock @(product.amount > 0 ? "in-stock" : "out-of-stock")">
+                                    <i class="fas @(product.amount > 0 ? "fa-check-circle" : "fa-times-circle")"></i>
+                                    @if (product.amount > 0)
+                                    {
+                                        <span>В наличии: @product.amount шт.</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Нет в наличии</span>
+                                    }
+                                </div>
+
                                 <div class="product-price">
 
                                     <span class="current-price">
-                                        @product.price ₽
+                                        @product.price.ToString("N0") ₽
                                     </span>
 
                                     @{
@@ -197,17 +221,79 @@
 
                                 </div>
 
-                                <form asp-controller="Cart" asp-action="Add" method="post">
-                                    <input type="hidden" name="productId" value="@product.product_id" />
-                                    <button type="submit" class="add-to-cart">
-                                        <i class="fas fa-shopping-cart"></i> В корзину
-                                    </button>
-                                </form>
+                                <div class="product-actions">
+
+                                    @if (product.amount > 0)
+                                    {
+                                        <form asp-controller="Cart" asp-action="Add" method="post">
+                                            <input type="hidden" name="productId" value="@product.product_id" />
+
+                                            <div class="quantity-selector">
+                                                <label>Кол-во:</label>
+                                                <div class="quantity-input-wrapper">
+                                                    <input type="number"
+                                                           name="quantity"
+                                                           value="1"
+                                                           min="1"
+                                                           max="@product.amount"
+                                                           step="1"
+                                                           class="quantity-input"
+                                                           oninvalid="this.setCustomValidity('Введите число от 1 до @product.amount')"
+                                                           oninput="this.setCustomValidity('')" />
+                                                    <span class="quantity-hint">из @product.amount шт.</span>
+                                                </div>
+                                            </div>
+
+                                            @if (product.amount > 0)
+                                            {
+                                                <div class="max-quantity-hint @(product.amount < 5 ? "low-stock" : "") @(product.amount == 0 ? "out-of-stock" : "")">
+                                                    <i class="fas fa-box"></i> В наличии: @product.amount шт.
+                                                </div>
+                                            }
+
+                                            <button type="submit" class="add-to-cart">
+                                                <i class="fas fa-shopping-cart"></i> В корзину
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button class="add-to-cart disabled" disabled>
+                                            <i class="fas fa-shopping-cart"></i> Нет в наличии
+                                        </button>
+                                    }
+
+                                    @if (Model.UserId != null)
+                                    {
+                                        <form asp-controller="Favorite" asp-action="Add" method="post">
+                                            <input type="hidden" name="productId" value="@product.product_id" />
+                                            <input type="hidden" name="returnUrl" value="@Url.Action("Index", "MainShop", new { categoryId = Context.Request.Query["categoryId"], minprice = Context.Request.Query["minprice"], maxprice = Context.Request.Query["maxprice"], sortby = Context.Request.Query["sortby"] })" />
+
+                                            @if (Model.FavoriteProductIds != null && Model.FavoriteProductIds.Contains(product.product_id))
+                                            {
+                                                <button type="submit" class="favorite-btn active" formaction="@Url.Action("Remove", "Favorite")">
+                                                    <i class="fas fa-heart"></i> В избранном
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="submit" class="favorite-btn">
+                                                    <i class="far fa-heart"></i> В избранное
+                                                </button>
+                                            }
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("Index", "Authorize")" class="favorite-btn">
+                                            <i class="far fa-heart"></i> В избранное
+                                        </a>
+                                    }
+                                </div>
                             </div>
                         }
                     </div>
                 </div>
-            </form>
         </div>
     </main>
 

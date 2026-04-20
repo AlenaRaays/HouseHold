@@ -1,8 +1,9 @@
 wwwroot\css\authorize.css
 wwwroot\css\cart.css
+wwwroot\css\checkout.css
+wwwroot\css\favorites.css
 wwwroot\css\mainshop.css
 wwwroot\css\profile.css
-wwwroot\css\register.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\js\site.js
@@ -63,3 +64,4 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\css\register.css

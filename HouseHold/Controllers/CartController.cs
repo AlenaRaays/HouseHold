@@ -41,14 +41,36 @@ public class CartController : Controller
         return View(vm);
     }
     [HttpPost]
-    public async Task<IActionResult> Add(int productId)
+    public async Task<IActionResult> Add(int productId, int quantity = 1)
     {
         int? userId = HttpContext.Session.GetInt32("userId");
 
         if (userId == null)
+        {
+            TempData["Error"] = "Для добавления в корзину необходимо авторизоваться";
             return RedirectToAction("Index", "Authorize");
+        }
 
+        // Получаем товар для проверки наличия
+        var product = await _context.products
+            .FirstOrDefaultAsync(p => p.product_id == productId);
+
+        if (product == null)
+        {
+            TempData["Error"] = "Товар не найден";
+            return RedirectToAction("Index", "MainShop");
+        }
+
+        // Проверяем, видимый ли товар
+        if (!product.is_visible)
+        {
+            TempData["Error"] = "Товар недоступен для заказа";
+            return RedirectToAction("Index", "MainShop");
+        }
+
+        // Получаем или создаем корзину пользователя
         var cart = await _context.Carts
+            .Include(c => c.Items)
             .FirstOrDefaultAsync(c => c.user_id == userId);
 
         if (cart == null)
@@ -57,19 +79,36 @@ public class CartController : Controller
             {
                 user_id = userId.Value
             };
-
             _context.Carts.Add(cart);
             await _context.SaveChangesAsync();
         }
 
-        var item = await _context.CartItems
-            .FirstOrDefaultAsync(x =>
-                x.cart_id == cart.cart_id &&
-                x.product_id == productId);
+        // Проверяем, есть ли уже такой товар в корзине
+        var cartItem = cart.Items?.FirstOrDefault(i => i.product_id == productId);
+        int currentQuantityInCart = cartItem?.quantity ?? 0;
+        int requestedTotalQuantity = currentQuantityInCart + quantity;
 
-        if (item != null)
+        // Проверяем, достаточно ли товара на складе
+        if (product.amount < requestedTotalQuantity)
         {
-            item.quantity++;
+            int available = product.amount - currentQuantityInCart;
+
+            if (available <= 0)
+            {
+                TempData["Error"] = $"Товар \"{product.name}\" закончился на складе";
+            }
+            else
+            {
+                TempData["Error"] = $"Доступно только {available} шт. товара \"{product.name}\". В корзине уже {currentQuantityInCart} шт.";
+            }
+
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
+
+        // Добавляем или обновляем товар в корзине
+        if (cartItem != null)
+        {
+            cartItem.quantity = requestedTotalQuantity;
         }
         else
         {
@@ -77,19 +116,44 @@ public class CartController : Controller
             {
                 cart_id = cart.cart_id,
                 product_id = productId,
-                quantity = 1
+                quantity = quantity
             });
         }
 
         await _context.SaveChangesAsync();
 
-        return RedirectToAction("Index");
+        TempData["Success"] = $"Товар \"{product.name}\" добавлен в корзину";
+
+        return Redirect(Request.Headers["Referer"].ToString());
     }
 
     [HttpPost]
     public async Task<IActionResult> Update(int productId, int quantity)
     {
         int? userId = HttpContext.Session.GetInt32("userId");
+
+        if (userId == null)
+            return RedirectToAction("Index", "Authorize");
+
+        if (quantity < 1)
+            quantity = 1;
+
+        // Получаем товар для проверки
+        var product = await _context.products
+            .FirstOrDefaultAsync(p => p.product_id == productId);
+
+        if (product == null)
+        {
+            TempData["Error"] = "Товар не найден";
+            return RedirectToAction("Index");
+        }
+
+        // Проверяем наличие на складе
+        if (product.amount < quantity)
+        {
+            TempData["Error"] = $"Доступно только {product.amount} шт. товара \"{product.name}\"";
+            return RedirectToAction("Index");
+        }
 
         var cart = await _context.Carts
             .Include(c => c.Items)
@@ -101,28 +165,33 @@ public class CartController : Controller
         {
             item.quantity = quantity;
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Количество обновлено";
         }
 
         return RedirectToAction("Index");
     }
 
-    public async Task<IActionResult> Remove(int productId)
+    [HttpPost]
+    public async Task<IActionResult> Clear()
     {
         int? userId = HttpContext.Session.GetInt32("userId");
+
+        if (userId == null)
+            return RedirectToAction("Index", "Authorize");
 
         var cart = await _context.Carts
             .Include(c => c.Items)
             .FirstOrDefaultAsync(c => c.user_id == userId);
 
-        var item = cart?.Items.FirstOrDefault(x => x.product_id == productId);
-
-        if (item != null)
+        if (cart != null && cart.Items.Any())
         {
-            _context.CartItems.Remove(item);
+            _context.CartItems.RemoveRange(cart.Items);
             await _context.SaveChangesAsync();
-            _context.Entry(cart).Reload();
+            TempData["Success"] = "Корзина очищена";
         }
 
         return RedirectToAction("Index");
     }
+
+
 }

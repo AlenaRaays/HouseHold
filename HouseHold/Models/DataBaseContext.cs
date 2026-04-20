@@ -28,6 +28,7 @@ public class DataBaseContext : DbContext
     public DbSet<Users> users { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<Favorite> favorites { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -134,6 +135,20 @@ public class DataBaseContext : DbContext
             .WithMany(p => p.CartItems)
             .HasForeignKey(ci => ci.product_id)
             .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Favorite>()
+        .HasIndex(f => new { f.user_id, f.product_id })
+        .IsUnique();
+        modelBuilder.Entity<Favorite>()
+                .HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.user_id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Favorite>()
+            .HasOne(f => f.Product)
+            .WithMany()
+            .HasForeignKey(f => f.product_id)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
 }

@@ -1,4 +1,5 @@
 wwwroot\css\authorize.css
+wwwroot\css\cart.css
 wwwroot\css\mainshop.css
 wwwroot\css\profile.css
 wwwroot\css\register.css

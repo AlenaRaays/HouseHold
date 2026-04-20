@@ -22,6 +22,51 @@ namespace HouseHold.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("HouseHold.Models.Cart", b =>
+                {
+                    b.Property<int>("cart_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("cart_id"));
+
+                    b.Property<int>("user_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("cart_id");
+
+                    b.HasIndex("user_id")
+                        .IsUnique();
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("HouseHold.Models.CartItem", b =>
+                {
+                    b.Property<int>("cart_item_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("cart_item_id"));
+
+                    b.Property<int>("cart_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("product_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("cart_item_id");
+
+                    b.HasIndex("cart_id");
+
+                    b.HasIndex("product_id");
+
+                    b.ToTable("CartItems");
+                });
+
             modelBuilder.Entity("HouseHold.Models.Category", b =>
                 {
                     b.Property<int>("category_id")
@@ -370,6 +415,9 @@ namespace HouseHold.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<decimal>("price")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("supplier_id")
                         .HasColumnType("int");
 
@@ -624,8 +672,7 @@ namespace HouseHold.Migrations
 
                     b.Property<string>("password")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("phone")
                         .IsRequired()
@@ -643,6 +690,36 @@ namespace HouseHold.Migrations
                     b.HasIndex("role_id");
 
                     b.ToTable("users");
+                });
+
+            modelBuilder.Entity("HouseHold.Models.Cart", b =>
+                {
+                    b.HasOne("HouseHold.Models.Users", "User")
+                        .WithOne("Cart")
+                        .HasForeignKey("HouseHold.Models.Cart", "user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HouseHold.Models.CartItem", b =>
+                {
+                    b.HasOne("HouseHold.Models.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("cart_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HouseHold.Models.Product", "Product")
+                        .WithMany("CartItems")
+                        .HasForeignKey("product_id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("HouseHold.Models.Category", b =>
@@ -857,6 +934,11 @@ namespace HouseHold.Migrations
                     b.Navigation("UserRole");
                 });
 
+            modelBuilder.Entity("HouseHold.Models.Cart", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("HouseHold.Models.Category", b =>
                 {
                     b.Navigation("products");
@@ -899,6 +981,8 @@ namespace HouseHold.Migrations
 
             modelBuilder.Entity("HouseHold.Models.Product", b =>
                 {
+                    b.Navigation("CartItems");
+
                     b.Navigation("comments");
 
                     b.Navigation("orderItems");
@@ -938,6 +1022,9 @@ namespace HouseHold.Migrations
 
             modelBuilder.Entity("HouseHold.Models.Users", b =>
                 {
+                    b.Navigation("Cart")
+                        .IsRequired();
+
                     b.Navigation("comments");
 
                     b.Navigation("orders");

@@ -28,5 +28,6 @@ namespace HouseHold.Models
         public ICollection<Comment> comments { get; set; }
         public ICollection<ProductImage> productImages { get; set; }
         public ICollection<ProductTag> productTags { get; set; }
+        public ICollection<CartItem> CartItems { get; set; }
     }
 }

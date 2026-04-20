@@ -32,9 +32,9 @@
                 </form>
 
                 <div class="header-icons">
-                    <a href="#" class="icon-btn cart">
+                    <a href="@Url.Action("Index","Cart")" class="icon-btn cart">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="badge">3</span>
+                        <span class="badge"></span>
                     </a>
                     
                     @if (Model.UserId != null)
@@ -170,15 +170,12 @@
                                     </div>
                                 }
 
-                                @* ===== IMAGE ===== *@
                                 <div class="product-image">
                                     <i class="fas fa-box"></i>
                                 </div>
 
-                                @* ===== TITLE ===== *@
                                 <h3 class="product-title">@product.name</h3>
 
-                                @* ===== PRICE ===== *@
                                 <div class="product-price">
 
                                     <span class="current-price">
@@ -200,11 +197,12 @@
 
                                 </div>
 
-                                @* ===== ADD TO CART ===== *@
-                                <button class="add-to-cart">
-                                    <i class="fas fa-shopping-cart"></i> В корзину
-                                </button>
-
+                                <form asp-controller="Cart" asp-action="Add" method="post">
+                                    <input type="hidden" name="productId" value="@product.product_id" />
+                                    <button type="submit" class="add-to-cart">
+                                        <i class="fas fa-shopping-cart"></i> В корзину
+                                    </button>
+                                </form>
                             </div>
                         }
                     </div>

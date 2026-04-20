@@ -1,5 +1,4 @@
 ﻿using BCrypt.Net;
-using HouseHold.Migrations;
 using HouseHold.Models;
 using HouseHold.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;

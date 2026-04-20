@@ -20,5 +20,7 @@ namespace HouseHold.Models
         public ICollection<Comment> comments { get; set; }
         public ICollection<Orders> orders { get; set; }
         [ForeignKey("role_id")] public UserRole UserRole { get; set; }
+        public Cart Cart { get; set; }
+
     }
 }

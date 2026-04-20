@@ -218,7 +218,7 @@ namespace HouseHold.Migrations
                     email = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     registration_date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     is_active = table.Column<bool>(type: "bit", nullable: false),
-                    password = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     role_id = table.Column<int>(type: "int", nullable: false),
                     discount = table.Column<double>(type: "float", nullable: false),
                     last_login_date = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -245,6 +245,7 @@ namespace HouseHold.Migrations
                     discount_percent = table.Column<double>(type: "float", nullable: false),
                     amount = table.Column<int>(type: "int", nullable: false),
                     description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     is_visible = table.Column<bool>(type: "bit", nullable: false),
                     created_date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     supplier_id = table.Column<int>(type: "int", nullable: false),
@@ -272,6 +273,25 @@ namespace HouseHold.Migrations
                         column: x => x.supplier_id,
                         principalTable: "suppliers",
                         principalColumn: "supplier_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Carts",
+                columns: table => new
+                {
+                    cart_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    user_id = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Carts", x => x.cart_id);
+                    table.ForeignKey(
+                        name: "FK_Carts_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "user_id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -450,6 +470,33 @@ namespace HouseHold.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CartItems",
+                columns: table => new
+                {
+                    cart_item_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    cart_id = table.Column<int>(type: "int", nullable: false),
+                    product_id = table.Column<int>(type: "int", nullable: false),
+                    quantity = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartItems", x => x.cart_item_id);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Carts_cart_id",
+                        column: x => x.cart_id,
+                        principalTable: "Carts",
+                        principalColumn: "cart_id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CartItems_products_product_id",
+                        column: x => x.product_id,
+                        principalTable: "products",
+                        principalColumn: "product_id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "orderItems",
                 columns: table => new
                 {
@@ -476,6 +523,22 @@ namespace HouseHold.Migrations
                         principalColumn: "product_id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartItems_cart_id",
+                table: "CartItems",
+                column: "cart_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartItems_product_id",
+                table: "CartItems",
+                column: "product_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Carts_user_id",
+                table: "Carts",
+                column: "user_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_categories_parent_category_id",
@@ -592,6 +655,9 @@ namespace HouseHold.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "CartItems");
+
+            migrationBuilder.DropTable(
                 name: "comments");
 
             migrationBuilder.DropTable(
@@ -611,6 +677,9 @@ namespace HouseHold.Migrations
 
             migrationBuilder.DropTable(
                 name: "supplyItems");
+
+            migrationBuilder.DropTable(
+                name: "Carts");
 
             migrationBuilder.DropTable(
                 name: "orders");

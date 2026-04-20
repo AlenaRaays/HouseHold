@@ -1,0 +1,58 @@
+﻿@model HouseHold.Models.ViewModels.CartViewModel
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HouseHold — Магазин электроники</title>
+    <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <h2>Корзина</h2>
+    <a href="@Url.Action("Index","MainShop")">На главную</a>
+
+    @if (!Model.Items.Any())
+    {
+        <p>Корзина пуста</p>
+    }
+    else
+    {
+        <table>
+            <tr>
+                <th>Товар</th>
+                <th>Цена</th>
+                <th>Количество</th>
+                <th>Сумма</th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Price</td>
+
+                    <td>
+                        <form asp-action="Update" method="post">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="number" name="quantity" value="@item.Quantity" min="1" />
+                            <button type="submit">OK</button>
+                        </form>
+                    </td>
+
+                    <td>@item.Total</td>
+
+                    <td>
+                        <a asp-action="Remove" asp-route-productId="@item.ProductId">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </table>
+
+        <h3>Итого: @Model.GrandTotal</h3>
+    }
+    </body>
+</html>

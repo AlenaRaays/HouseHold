@@ -59,15 +59,15 @@ namespace HouseHold.Controllers
                     productsQuery = productsQuery.Where(p => p.name.Contains(searchQuery));
                 }
 
-                if (ViewBag.SortedBy == "price_asc")
+                if (sortby == "price_asc")
                 {
                     productsQuery = productsQuery.OrderBy(x => x.price);
                 }
-                else if (ViewBag.SortedBy == "price_desc")
+                else if (sortby == "price_desc")
                 {
                     productsQuery = productsQuery.OrderByDescending(x => x.price);
                 }
-                else if (ViewBag.SortedBy == "new")
+                else if (sortby == "new")
                 {
                     productsQuery = productsQuery.OrderBy(x => x.created_date);
                 }

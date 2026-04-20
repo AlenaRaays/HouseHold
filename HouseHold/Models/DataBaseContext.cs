@@ -26,6 +26,8 @@ public class DataBaseContext : DbContext
     public DbSet<Tag> tags { get; set; }
     public DbSet<UserRole> userRoles { get; set; }
     public DbSet<Users> users { get; set; }
+    public DbSet<Cart> Carts { get; set; }
+    public DbSet<CartItem> CartItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -117,7 +119,21 @@ public class DataBaseContext : DbContext
             .HasOne(x => x.UserRole)
             .WithMany(y => y.Users)
             .HasForeignKey(z => z.role_id);
-
+        modelBuilder.Entity<Cart>()
+            .HasOne(c => c.User)
+            .WithOne(u => u.Cart)
+            .HasForeignKey<Cart>(c => c.user_id)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CartItem>()
+            .HasOne(ci => ci.Cart)
+            .WithMany(c => c.Items)
+            .HasForeignKey(ci => ci.cart_id)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<CartItem>()
+            .HasOne(ci => ci.Product)
+            .WithMany(p => p.CartItems)
+            .HasForeignKey(ci => ci.product_id)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 
 }

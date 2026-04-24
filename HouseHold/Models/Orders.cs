@@ -15,7 +15,7 @@ namespace HouseHold.Models
         [Required] public DateTime completion_date { get; set; }
         [Required] public int total_amount { get; set; }
         [Required, MaxLength(500)] public string delivery_address { get; set; }
-        [Required, MaxLength(500)] public string order_comment { get; set; }
+        [MaxLength(500)] public string order_comment { get; set; }
         [Required] public double discount_at_order { get; set; }
 
         [ForeignKey("user_id")] public Users user { get; set; }

@@ -26,7 +26,6 @@ namespace HouseHold.Models
         public ICollection<PriceHistory> priceHistories { get; set; }
         public ICollection<OrderItem> orderItems { get; set; }
         public ICollection<Comment> comments { get; set; }
-        public ICollection<ProductImage> productImages { get; set; }
         public ICollection<ProductTag> productTags { get; set; }
         public ICollection<CartItem> CartItems { get; set; }
     }

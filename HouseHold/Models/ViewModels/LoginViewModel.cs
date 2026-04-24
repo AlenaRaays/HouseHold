@@ -11,7 +11,5 @@ namespace HouseHold.Models.ViewModels
         [Required(ErrorMessage = "Пароль обязателен")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-
-        public bool RememberMe { get; set; }
     }
 }

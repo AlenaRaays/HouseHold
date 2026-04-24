@@ -1,4 +1,6 @@
 ﻿@model HouseHold.Models.ViewModels.CheckoutViewModel
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -53,6 +55,13 @@
                 </div>
             }
 
+            @if (TempData["Warning"] != null)
+            {
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> @TempData["Warning"]
+                </div>
+            }
+
             <div class="checkout-content">
                 <div class="checkout-main">
                     <form asp-action="Checkout" method="post">
@@ -64,7 +73,11 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Имя</label>
-                                    <input type="text" class="form-control" value="@Context.Session.GetString("UserName")" readonly />
+                                    <input type="text" class="form-control" value="@HttpContextAccessor.HttpContext.Session.GetString("username")" readonly />
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="text" class="form-control" value="@HttpContextAccessor.HttpContext.Session.GetString("email")" readonly />
                                 </div>
                             </div>
                         </div>
@@ -74,7 +87,8 @@
                             <h3><i class="fas fa-map-marker-alt"></i> Адрес доставки</h3>
                             <div class="form-group">
                                 <label asp-for="DeliveryAddress">Адрес <span class="required">*</span></label>
-                                <textarea asp-for="DeliveryAddress" class="form-control" rows="3" placeholder="Город, улица, дом, квартира" required></textarea>
+                                <textarea asp-for="DeliveryAddress" class="form-control" rows="3"
+                                          placeholder="Город, улица, дом, квартира" required></textarea>
                                 <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
                             </div>
                         </div>
@@ -117,7 +131,8 @@
                         <div class="checkout-section">
                             <h3><i class="fas fa-comment"></i> Комментарий к заказу</h3>
                             <div class="form-group">
-                                <textarea asp-for="OrderComment" class="form-control" rows="2" placeholder="Дополнительная информация (необязательно)"></textarea>
+                                <textarea asp-for="OrderComment" class="form-control" rows="2"
+                                          placeholder="Дополнительная информация (необязательно)"></textarea>
                             </div>
                         </div>
 
@@ -159,21 +174,33 @@
                             @if (Model.Discount > 0)
                             {
                                 <div class="summary-row discount">
-                                    <span>Скидка</span>
+                                    <span>Скидка @HttpContextAccessor.HttpContext.Session.GetInt32("discount")%</span>
                                     <span>-@Model.Discount.ToString("N0") ₽</span>
                                 </div>
                             }
 
+                            @{
+                                // Вычисляем стоимость доставки на сервере
+                                var selectedDelivery = Model.DeliveryMethods.FirstOrDefault(d => d.delivery_method_id == Model.DeliveryMethodId);
+                                var deliveryCost = selectedDelivery?.cost ?? 0;
+                                var total = Model.SubTotal - Model.Discount + deliveryCost;
+                            }
+
                             <div class="summary-row">
                                 <span>Доставка</span>
-                                <span id="deliveryCost">0 ₽</span>
+                                <span>@deliveryCost.ToString("N0") ₽</span>
                             </div>
 
                             <div class="summary-row total">
                                 <span>Итого</span>
-                                <span id="totalAmount">@((Model.SubTotal - Model.Discount).ToString("N0")) ₽</span>
+                                <span>@total.ToString("N0") ₽</span>
                             </div>
                         </div>
+                        
+                        <p class="delivery-note">
+                            <i class="fas fa-info-circle"></i> 
+                            Стоимость доставки будет пересчитана после выбора способа доставки
+                        </p>
                     </div>
                 </div>
             </div>
@@ -187,25 +214,5 @@
             </div>
         </div>
     </footer>
-
-    <script>
-        // Обновление стоимости доставки при выборе метода
-        document.querySelectorAll('input[name="DeliveryMethodId"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const deliveryCost = this.closest('.delivery-option').querySelector('.delivery-cost').textContent;
-                document.getElementById('deliveryCost').textContent = deliveryCost;
-                updateTotal();
-            });
-        });
-
-        function updateTotal() {
-            const subTotal = @Model.SubTotal;
-            const discount = @Model.Discount;
-            const deliveryCostText = document.getElementById('deliveryCost').textContent;
-            const deliveryCost = parseFloat(deliveryCostText.replace(/[^\d]/g, '')) || 0;
-            const total = subTotal - discount + deliveryCost;
-            document.getElementById('totalAmount').textContent = total.toLocaleString() + ' ₽';
-        }
-    </script>
 </body>
 </html>

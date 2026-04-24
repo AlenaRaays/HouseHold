@@ -75,10 +75,7 @@ public class CartController : Controller
 
         if (cart == null)
         {
-            cart = new Cart
-            {
-                user_id = userId.Value
-            };
+            cart = new Cart { user_id = userId.Value };
             _context.Carts.Add(cart);
             await _context.SaveChangesAsync();
         }
@@ -99,10 +96,13 @@ public class CartController : Controller
             }
             else
             {
-                TempData["Error"] = $"Доступно только {available} шт. товара \"{product.name}\". В корзине уже {currentQuantityInCart} шт.";
+                TempData["Error"] = $"Доступно только {available} шт. товара \"{product.name}\"";
             }
 
-            return Redirect(Request.Headers["Referer"].ToString());
+            // Сохраняем в TempData и сразу помечаем как использованное
+            TempData["ShowError"] = true;
+
+            return RedirectToAction("Index", "MainShop");
         }
 
         // Добавляем или обновляем товар в корзине
@@ -124,9 +124,8 @@ public class CartController : Controller
 
         TempData["Success"] = $"Товар \"{product.name}\" добавлен в корзину";
 
-        return Redirect(Request.Headers["Referer"].ToString());
+        return RedirectToAction("Index", "MainShop");
     }
-
     [HttpPost]
     public async Task<IActionResult> Update(int productId, int quantity)
     {
@@ -170,6 +169,7 @@ public class CartController : Controller
 
         return RedirectToAction("Index");
     }
+
 
     [HttpPost]
     public async Task<IActionResult> Clear()

@@ -103,7 +103,6 @@ namespace HouseHold.Controllers
             return View(viewModel);
         }
 
-        // Обработка оформления заказа
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Checkout(CheckoutViewModel model)
@@ -115,7 +114,6 @@ namespace HouseHold.Controllers
 
             if (!ModelState.IsValid)
             {
-                // Перезагружаем списки для формы
                 model.DeliveryMethods = await _context.deliveryMethods.ToListAsync();
                 model.PaymentMethods = await _context.paymentMethods.ToListAsync();
                 return View(model);
@@ -126,7 +124,7 @@ namespace HouseHold.Controllers
 
             try
             {
-                // Получаем корзину
+                // Получаем корзину с товарами
                 var cart = await _context.Carts
                     .Include(c => c.Items)
                     .ThenInclude(i => i.Product)
@@ -146,16 +144,26 @@ namespace HouseHold.Controllers
                 var deliveryMethod = await _context.deliveryMethods
                     .FirstOrDefaultAsync(d => d.delivery_method_id == model.DeliveryMethodId);
 
-                // Финальная проверка наличия товаров
+                // Финальная проверка наличия товаров и обновление количества
                 foreach (var item in cart.Items)
                 {
                     var product = item.Product;
 
+                    // Проверяем, что товар существует и видимый
+                    if (product == null || !product.is_visible)
+                    {
+                        throw new Exception($"Товар \"{item.Product?.name ?? "Неизвестный"}\" недоступен");
+                    }
+
+                    // Проверяем достаточное количество
                     if (product.amount < item.quantity)
                     {
-                        TempData["Error"] = $"Товар \"{product.name}\" доступен только в количестве {product.amount} шт.";
-                        return RedirectToAction("Checkout");
+                        throw new Exception($"Товар \"{product.name}\" доступен только в количестве {product.amount} шт.");
                     }
+
+                    // СПИСЫВАЕМ ТОВАРЫ СО СКЛАДА
+                    product.amount -= item.quantity;
+                    _context.products.Update(product);
                 }
 
                 // Рассчитываем итоговую сумму
@@ -165,28 +173,26 @@ namespace HouseHold.Controllers
                 double deliveryCost = deliveryMethod?.cost ?? 0;
                 double totalAmount = subTotal - discountAmount + deliveryCost;
 
-                // Генерируем номер заказа
                 string orderNumber = $"ORD-{DateTime.Now:yyyyMMdd}-{userId}-{new Random().Next(1000, 9999)}";
 
-                // Создаем заказ
                 var order = new Orders
                 {
                     order_number = orderNumber,
                     user_id = userId.Value,
-                    status_id = 1, // Новый заказ
+                    status_id = 1, // Новый заказ (убедитесь что такой статус есть)
                     delivery_method_id = model.DeliveryMethodId,
                     payment_method_id = model.PaymentMethodId,
                     created_date = DateTime.Now,
                     total_amount = (int)totalAmount,
                     delivery_address = model.DeliveryAddress,
-                    order_comment = model.OrderComment ?? "",
+                    order_comment = string.IsNullOrWhiteSpace(model.OrderComment) ? "" : model.OrderComment,
                     discount_at_order = discountPercent
                 };
 
                 _context.orders.Add(order);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); // Сохраняем чтобы получить order_id
 
-                // Создаем позиции заказа и обновляем количество товаров
+                // Создаем позиции заказа
                 foreach (var item in cart.Items)
                 {
                     var orderItem = new OrderItem
@@ -197,16 +203,12 @@ namespace HouseHold.Controllers
                         price_at_order = (float)item.Product.price
                     };
                     _context.orderItems.Add(orderItem);
-
-                    // Уменьшаем количество товара на складе
-                    var product = item.Product;
-                    product.amount -= item.quantity;
-                    _context.products.Update(product);
                 }
 
                 // Очищаем корзину
                 _context.CartItems.RemoveRange(cart.Items);
 
+                // Сохраняем все изменения
                 await _context.SaveChangesAsync();
 
                 // Фиксируем транзакцию
@@ -214,8 +216,8 @@ namespace HouseHold.Controllers
 
                 TempData["Success"] = $"Заказ №{orderNumber} успешно оформлен!";
 
-                // Отправляем уведомление (опционально)
-                // await SendOrderConfirmationEmail(user.email, order);
+                // Сохраняем ID заказа для страницы успеха
+                HttpContext.Session.SetInt32("LastOrderId", order.order_id);
 
                 return RedirectToAction("Success", new { orderId = order.order_id });
             }
@@ -223,9 +225,13 @@ namespace HouseHold.Controllers
             {
                 await transaction.RollbackAsync();
                 _logger.LogError(ex, "Ошибка при оформлении заказа");
-                TempData["Error"] = "Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте позже.";
+                TempData["Error"] = ex.Message;
 
-                return RedirectToAction("Checkout");
+                // Перезагружаем данные для формы
+                model.DeliveryMethods = await _context.deliveryMethods.ToListAsync();
+                model.PaymentMethods = await _context.paymentMethods.ToListAsync();
+
+                return View(model);
             }
         }
 

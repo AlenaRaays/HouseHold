@@ -17,7 +17,6 @@ public class DataBaseContext : DbContext
     public DbSet<PaymentMethod> paymentMethods { get; set; }
     public DbSet<PriceHistory> priceHistories { get; set; }
     public DbSet<Product> products { get; set; }
-    public DbSet<ProductImage> productImages { get; set; }
     public DbSet<ProductTag> productTags { get; set; }
     public DbSet<Statuses> statuses { get; set; }
     public DbSet<Supplier> suppliers { get; set; }
@@ -75,10 +74,6 @@ public class DataBaseContext : DbContext
         modelBuilder.Entity<PriceHistory>()
             .HasOne(x => x.Product)
             .WithMany(y => y.priceHistories)
-            .HasForeignKey(z => z.product_id);
-        modelBuilder.Entity<ProductImage>()
-            .HasOne(x => x.Product)
-            .WithMany(y => y.productImages)
             .HasForeignKey(z => z.product_id);
         modelBuilder.Entity<Manufacturer>()
             .HasOne(x => x.country)
